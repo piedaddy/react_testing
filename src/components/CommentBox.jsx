@@ -1,26 +1,57 @@
-import React, {useEffect, useState} from 'react';
-import '../App.css';
+import React, { Component } from "react";
+import "../App.css";
+import { connect } from "react-redux";
+import * as actions from "actions";
+//will grab all actions from actions directory
+import requireAuth from 'components/requireAuth';
+
+class CommentBox extends Component {
+  //const [comment, setComment] = useState('');
+  state = { comment: "" };
 
 
-export default function CommentBox() {
-  const [comment, setComment] = useState('');
+  handleSubmit = (e) => {
+    e.preventDefault(); //keeps page from reloading
+    //call an action creator
 
-  const handleSendComment = () => {
-    
-  }
+    //actions.saveComment(comment);
+    this.props.saveComment(this.state.comment);
+    //save the comment
+    //setComment('');
+    this.setState({ comment: "" });
+  };
 
-  const handleCommentChange = (e) => {
-    console.log('e', e.target.value)
-    setComment(e.target.value);
-  }
+  handleCommentChange = (e) => {
+    console.log("e", e.target.value);
+    //setComment(e.target.value);
+    this.setState({ comment: e.target.value });
+  };
 
-   return (
-    <div className="comments" >
-      <h2>Add a comment</h2>
-      <textarea onChange={handleCommentChange} className="comment_box" rows="10" cols="30" placeholder="this is my comment" value={comment}/> 
+  render() {
+    return (
       <div>
-      <button onClick={handleSendComment} name="submit" value="submit comment">Submit comment</button>
+        <form className="form" onSubmit={this.handleSubmit}>
+          <h2>Add a comment</h2>
+          <textarea
+            onChange={this.handleCommentChange}
+            className="comment_box"
+            rows="10"
+            cols="30"
+            placeholder="this is my comment"
+            value={this.state.comment}
+          />
+          <div>
+            <button>Submit comment</button>
+          </div>
+        </form>
+        <button className="fetch-comments" onClick={this.props.fetchComments}>Fetch Comments</button>
+        {/* we are giving a callback function that it can call at any time, not when it first gets rendered, so it doesn't have () with it
+        when we bind action creator to the component, which we did in the export code below, it gets binded to the props object for the component itself  */}
       </div>
-    </div>
-  )
-}
+    );
+  }
+};
+
+
+export default connect(null, actions)(requireAuth(CommentBox));
+//actions being passed as props down to Comment Box 
